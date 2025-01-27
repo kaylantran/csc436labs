@@ -16,8 +16,13 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -85,6 +90,28 @@ fun GradScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(8.dp)
             )
         }
+        Rsvp(modifier)
+    }
+}
+
+@Preview
+@Composable
+fun Rsvp(modifier: Modifier = Modifier){
+    var checked by remember { mutableStateOf(true) }
+    var msg = if (checked) "I'll be there!" else "Sorry I can't be there."
+
+    Column (
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        Switch(
+            checked = checked,
+            onCheckedChange = { checked = it }
+        )
+        Text(
+            text = msg,
+            fontSize = 30.sp
+        )
     }
 }
 
