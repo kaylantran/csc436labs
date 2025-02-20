@@ -13,9 +13,8 @@ import com.zybooks.pizzaparty.ui.theme.PizzaPartyTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
-            PizzaPartyTheme {
+            PizzaPartyTheme (dynamicColor = false) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
