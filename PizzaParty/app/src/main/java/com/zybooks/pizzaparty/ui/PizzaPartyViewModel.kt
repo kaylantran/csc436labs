@@ -1,20 +1,23 @@
 package com.zybooks.pizzaparty.ui
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.zybooks.pizzaparty.calculateNumPizzas
+import com.zybooks.pizzaparty.HungerLevel
+import com.zybooks.pizzaparty.PizzaCalculator
 
 class PizzaPartyViewModel : ViewModel() {
-    var totalPizzas by mutableStateOf(0)
-        private set
-
     var numPeopleInput by mutableStateOf("")
 
-    var hungerLevel by mutableStateOf("Medium")
+    var hungerLevel by mutableStateOf(HungerLevel.MEDIUM)
 
-    fun calculatePizzas() {
-        totalPizzas = calculateNumPizzas(numPeopleInput.toIntOrNull() ?: 0, hungerLevel)
+    var totalPizzas by mutableIntStateOf(0)
+        private set
+
+    fun calculateNumPizzas() {
+        val calc = PizzaCalculator(numPeopleInput.toIntOrNull() ?: 0, hungerLevel)
+        totalPizzas = calc.totalPizzas
     }
 }
