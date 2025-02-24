@@ -61,37 +61,6 @@ sealed class Routes {
    )
 }
 
-@Preview
-@Composable
-fun PreviewListScreen() {
-   PetAdoptionTheme {
-      ListScreen(
-         onImageClick = { }
-      )
-   }
-}
-
-@Preview
-@Composable
-fun PreviewDetailScreen() {
-   val pet = PetDataSource().loadPets()[0]
-   PetAdoptionTheme {
-      DetailScreen(
-         petId = pet.id,
-         onAdoptClick = { }
-      )
-   }
-}
-
-@Preview
-@Composable
-fun PreviewAdoptScreen() {
-   val pet = PetDataSource().loadPets()[0]
-   PetAdoptionTheme {
-      AdoptScreen(pet.id)
-   }
-}
-
 @Composable
 fun PetApp() {
    val navController = rememberNavController()
@@ -163,7 +132,6 @@ fun PetAppBar(
 
 @Composable
 fun ListScreen(
-   petList: List<Pet>,
    onImageClick: (Pet) -> Unit,
    modifier: Modifier = Modifier,
    viewModel: ListViewModel = viewModel()
@@ -318,3 +286,33 @@ fun shareAdoption(context: Context, pet: Pet) {
    )
 }
 
+@Preview
+@Composable
+fun PreviewListScreen() {
+   PetAdoptionTheme {
+      ListScreen(
+         onImageClick = { }
+      )
+   }
+}
+
+@Preview
+@Composable
+fun PreviewDetailScreen() {
+   val pet = PetDataSource().loadPets()[0]
+   PetAdoptionTheme {
+      DetailScreen(
+         petId = pet.id,
+         onAdoptClick = { }
+      )
+   }
+}
+
+@Preview
+@Composable
+fun PreviewAdoptScreen() {
+   val pet = PetDataSource().loadPets()[0]
+   PetAdoptionTheme {
+      AdoptScreen(pet.id)
+   }
+}
