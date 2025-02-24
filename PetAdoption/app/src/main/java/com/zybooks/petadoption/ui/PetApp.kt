@@ -31,16 +31,91 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.zybooks.petadoption.data.Pet
 import com.zybooks.petadoption.data.PetDataSource
 import com.zybooks.petadoption.data.PetGender
 import com.zybooks.petadoption.ui.theme.PetAdoptionTheme
+import kotlinx.serialization.Serializable
+
+sealed class Routes {
+   @Serializable
+   data object List
+
+   @Serializable
+   data object Detail
+
+   @Serializable
+   data object Adopt
+}
+
+@Preview
+@Composable
+fun PreviewListScreen() {
+   PetAdoptionTheme {
+      ListScreen(
+         petList = PetDataSource().loadPets(),
+         onImageClick = { }
+      )
+   }
+}
+
+@Preview
+@Composable
+fun PreviewDetailScreen() {
+   val pet = PetDataSource().loadPets()[0]
+   PetAdoptionTheme {
+      DetailScreen(
+         pet = pet,
+         onAdoptClick = { }
+      )
+   }
+}
+
+@Preview
+@Composable
+fun PreviewAdoptScreen() {
+   val pet = PetDataSource().loadPets()[0]
+   PetAdoptionTheme {
+      AdoptScreen(pet)
+   }
+}
 
 @Composable
 fun PetApp(
    petViewModel: PetViewModel = viewModel()
 ) {
-   Text("To be implemented...")
+   val navController = rememberNavController()
+
+   NavHost(
+      navController = navController,
+      startDestination = Routes.List
+   ) {
+      composable<Routes.List> {
+         ListScreen(
+            petList = petViewModel.petList,
+            onImageClick = { pet ->
+               petViewModel.selectedPet = pet
+               navController.navigate(Routes.Detail)
+            }
+         )
+      }
+      composable<Routes.Detail> {
+         DetailScreen(
+            pet = petViewModel.selectedPet,
+            onAdoptClick = {
+               navController.navigate(Routes.Adopt)
+            },
+         )
+      }
+      composable<Routes.Adopt> {
+         AdoptScreen(
+            pet = petViewModel.selectedPet,
+         )
+      }
+   }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,17 +162,6 @@ fun ListScreen(
             )
          }
       }
-   }
-}
-
-@Preview
-@Composable
-fun PreviewListScreen() {
-   PetAdoptionTheme {
-      ListScreen(
-         petList = PetDataSource().loadPets(),
-         onImageClick = { }
-      )
    }
 }
 
@@ -156,27 +220,6 @@ fun DetailScreen(
             )
          }
       }
-   }
-}
-
-@Preview
-@Composable
-fun PreviewDetailScreen() {
-   val pet = PetDataSource().loadPets()[0]
-   PetAdoptionTheme {
-      DetailScreen(
-         pet = pet,
-         onAdoptClick = { }
-      )
-   }
-}
-
-@Preview
-@Composable
-fun PreviewAdoptScreen() {
-   val pet = PetDataSource().loadPets()[0]
-   PetAdoptionTheme {
-      AdoptScreen(pet)
    }
 }
 
