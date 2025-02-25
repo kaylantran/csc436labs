@@ -5,7 +5,7 @@ plugins {
 
 android {
    namespace = "com.zybooks.countdowntimer"
-   compileSdk = 35
+   compileSdk = 34
 
    defaultConfig {
       applicationId = "com.zybooks.countdowntimer"
@@ -60,8 +60,8 @@ dependencies {
    implementation(libs.androidx.ui.tooling.preview)
    implementation(libs.androidx.material3)
    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.work.runtime.ktx)
-    testImplementation(libs.junit)
+   implementation(libs.androidx.work.runtime.ktx)
+   testImplementation(libs.junit)
    androidTestImplementation(libs.androidx.junit)
    androidTestImplementation(libs.androidx.espresso.core)
    androidTestImplementation(platform(libs.androidx.compose.bom))
