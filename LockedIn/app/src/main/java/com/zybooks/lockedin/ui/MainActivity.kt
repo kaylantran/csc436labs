@@ -1,6 +1,8 @@
 package com.zybooks.lockedin.ui
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -20,6 +22,10 @@ class MainActivity : AppCompatActivity() {
         if (intent.getBooleanExtra("from_settings", false)) {
             val timerFragment = supportFragmentManager.findFragmentById(R.id.timerFragment) as? TimerFragment
             timerFragment?.updateTimerFromSettings()
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 101)
         }
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)

@@ -1,6 +1,11 @@
 package com.zybooks.lockedin.ui
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -9,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.app.NotificationCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.zybooks.lockedin.R
@@ -65,6 +71,8 @@ class TimerFragment : Fragment() {
             override fun onFinish() {
                 timerRunning = false
                 updatePlayButtonIcon(false)
+                Log.d("TIMER_FRAGMENT", "Timer finished - Attempting to send notification")
+                sendTimerFinishedNotification()
             }
         }.start()
 
@@ -80,7 +88,16 @@ class TimerFragment : Fragment() {
 
     private fun resetTimer() {
         countdownTimer?.cancel()
-        timeLeftInMillis = (25*60000)
+
+        val sharedPreferences = requireContext().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
+        val studyHours = sharedPreferences.getInt("studyHours", 0)
+        val studyMinutes = sharedPreferences.getInt("studyMinutes", 10)
+        val studySeconds = sharedPreferences.getInt("studySeconds", 0)
+
+        timeLeftInMillis = ((studyHours * 3600 + studyMinutes * 60 + studySeconds) * 1000).toLong()
+
+        Log.d("TIMER_FRAGMENT", "Timer reset to: ${formatTime(timeLeftInMillis / 1000)}")
+
         timerText.text = formatTime(timeLeftInMillis / 1000)
         timerRunning = false
         updatePlayButtonIcon(false)
@@ -88,20 +105,17 @@ class TimerFragment : Fragment() {
 
     private fun updatePlayButtonIcon(isPlaying: Boolean) {
         Log.d("TIMER_FRAGMENT", "Updating play button icon: $isPlaying")
-        Log.d("TIMER_FRAGMENT", "playButton reference: $playButton")
 
-        requireActivity().runOnUiThread {
-            if (::playButton.isInitialized) {
-                val newIcon = if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play
-                playButton.setImageDrawable(requireContext().getDrawable(newIcon))
-
-                playButton.invalidate()
-                playButton.requestLayout()
-            } else {
-                Log.e("TIMER_FRAGMENT", "playButton is not initialized!")
-            }
+        if (::playButton.isInitialized) {
+            val newIcon = if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play
+            playButton.setImageResource(newIcon)
+            playButton.invalidate()
+        } else {
+            Log.e("TIMER_FRAGMENT", "playButton is not initialized!")
         }
     }
+
+
 
     private fun startNewTimer(hours: Int, minutes: Int, seconds: Int) {
         val durationInMillis = ((hours * 3600 + minutes * 60 + seconds) * 1000).toLong()
@@ -161,5 +175,38 @@ class TimerFragment : Fragment() {
         timerText.text = formatTime(timeLeftInMillis / 1000)
     }
 
+    private fun sendTimerFinishedNotification() {
+        val channelId = "TIMER_CHANNEL"
+        val notificationManager = requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Timer Notifications",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val intent = Intent(requireContext(), MainActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(
+            requireContext(),
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notificationBuilder = NotificationCompat.Builder(requireContext(), channelId)
+            .setSmallIcon(R.drawable.ic_notification) // Change to your actual notification icon
+            .setContentTitle("Study Timer Finished")
+            .setContentText("Time for a break!")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+
+        notificationManager.notify(1, notificationBuilder.build())
+
+        Log.d("TIMER_FRAGMENT", "Notification sent successfully")
+    }
 
 }
