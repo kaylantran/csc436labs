@@ -1,92 +1,71 @@
 package com.zybooks.lockedin.ui
 
+import android.content.Intent
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.zybooks.lockedin.R
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var timerText: TextView
-    private lateinit var playButton: ImageButton
-    private lateinit var resetButton: ImageButton
-    private var timerRunning = false
-    private var countdownTimer: CountDownTimer? = null
-    private var timeLeftInMillis: Long = 600000
+    private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        timerText = findViewById(R.id.timer_text)
-        playButton = findViewById(R.id.play_button)
-        resetButton = findViewById(R.id.reset_button)
+        bottomNavigationView = findViewById(R.id.bottom_navigation)
 
-        updateTimerText()
-
-        playButton.setOnClickListener {
-            if (timerRunning) {
-                pauseTimer()
-            } else {
-                startTimer()
-            }
+        if (savedInstanceState == null) {
+            loadFragment(TimerFragment())
+            bottomNavigationView.selectedItemId = R.id.nav_home
         }
 
-        resetButton.setOnClickListener {
-            resetTimer()
+
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    loadFragment(TimerFragment())
+                    return@setOnItemSelectedListener true
+                }
+                R.id.nav_history -> {
+                    loadFragment(HistoryFragment())
+                    return@setOnItemSelectedListener true
+                }
+                R.id.nav_settings -> {
+                    loadFragment(SettingsFragment())
+                    return@setOnItemSelectedListener false
+                }
+            }
+            false
         }
     }
 
-    private fun startTimer() {
-        countdownTimer = object : CountDownTimer(timeLeftInMillis, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                timeLeftInMillis = millisUntilFinished
-                updateTimerText()
-            }
-
-            override fun onFinish() {
-                timerRunning = false
-                updatePlayButtonIcon(false)
-            }
-        }.start()
-
-        updatePlayButtonIcon(true)
-        timerRunning = true
+    private fun loadFragment(fragment: Fragment) {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+        if (currentFragment?.javaClass != fragment.javaClass) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.nav_host_fragment, fragment)
+                .commit()
+        }
     }
 
-    private fun pauseTimer() {
-        countdownTimer?.cancel()
-        updatePlayButtonIcon(false)
-        timerRunning = false
+    override fun onResume() {
+        super.onResume()
+        if (::bottomNavigationView.isInitialized) {
+            updateNavSelection()
+        }
     }
 
-
-    private fun resetTimer() {
-        countdownTimer?.cancel()
-        timeLeftInMillis = 600000
-        updateTimerText()
-        updatePlayButtonIcon(false)
-        playButton.setImageResource(R.drawable.ic_play)
-        timerRunning = false
-    }
-
-    private fun updatePlayButtonIcon(isPlaying: Boolean) {
-        playButton.setImageResource(if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play)
-
-        playButton.scaleType = ImageView.ScaleType.FIT_CENTER
-        playButton.adjustViewBounds = true
-        playButton.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-
-        playButton.requestLayout()
-        playButton.invalidate()
-    }
-
-    private fun updateTimerText() {
-        val minutes = (timeLeftInMillis / 1000) / 60
-        val seconds = (timeLeftInMillis / 1000) % 60
-        timerText.text = String.format("%02d:%02d", minutes, seconds)
+    private fun updateNavSelection() {
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+        when (currentFragment) {
+            is TimerFragment -> bottomNavigationView.selectedItemId = R.id.nav_home
+            is HistoryFragment -> bottomNavigationView.selectedItemId = R.id.nav_history
+            is SettingsFragment -> bottomNavigationView.selectedItemId = R.id.nav_settings
+        }
     }
 }
