@@ -8,6 +8,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.zybooks.lockedin.R
+import com.zybooks.lockedin.service.TimerService
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -80,6 +81,12 @@ class SettingsActivity : AppCompatActivity() {
         editor.putBoolean("backgroundTimer", backgroundTimer.isChecked)
 
         editor.apply()
+
+        if (backgroundTimer.isChecked) {
+            startBackgroundTimer()
+        } else {
+            stopBackgroundTimer()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -93,5 +100,16 @@ class SettingsActivity : AppCompatActivity() {
         intent.putExtra("from_settings", true)
         startActivity(intent)
         finish()
+    }
+
+    private fun startBackgroundTimer() {
+        val intent = Intent(this, TimerService::class.java)
+        intent.putExtra("TIMER_DURATION", (25 * 60 * 1000).toLong())
+        startService(intent)
+    }
+
+    private fun stopBackgroundTimer() {
+        val intent = Intent(this, TimerService::class.java)
+        stopService(intent)
     }
 }

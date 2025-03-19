@@ -1,5 +1,6 @@
 package com.zybooks.lockedin.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
@@ -22,6 +23,8 @@ class TimerFragment : Fragment() {
     private var countdownTimer: CountDownTimer? = null
     private var timerRunning = false
     private var timeLeftInMillis: Long = (25*60000 )
+    private lateinit var timerTextView: TextView
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -29,7 +32,7 @@ class TimerFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_timer, container, false)
         viewModel = ViewModelProvider(this).get(TimerViewModel::class.java)
 
-        timerText = view.findViewById(R.id.timer_text)
+        timerText = view.findViewById(R.id.timerTextView)
         playButton = view.findViewById(R.id.play_button)
         resetButton = view.findViewById(R.id.reset_button)
 
@@ -85,13 +88,42 @@ class TimerFragment : Fragment() {
 
     private fun updatePlayButtonIcon(isPlaying: Boolean) {
         Log.d("TIMER_FRAGMENT", "Updating play button icon: $isPlaying")
+        Log.d("TIMER_FRAGMENT", "playButton reference: $playButton")
+
         requireActivity().runOnUiThread {
             if (::playButton.isInitialized) {
-                playButton.setImageResource(if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play)
+                val newIcon = if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play
+                playButton.setImageDrawable(requireContext().getDrawable(newIcon))
+
+                playButton.invalidate()
+                playButton.requestLayout()
             } else {
                 Log.e("TIMER_FRAGMENT", "playButton is not initialized!")
             }
         }
+    }
+
+    private fun startNewTimer(hours: Int, minutes: Int, seconds: Int) {
+        val durationInMillis = ((hours * 3600 + minutes * 60 + seconds) * 1000).toLong()
+        countdownTimer?.cancel()
+        countdownTimer = object : CountDownTimer(durationInMillis, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val hours = (millisUntilFinished / 1000) / 3600
+                val mins = ((millisUntilFinished / 1000) % 3600) / 60
+                val secs = (millisUntilFinished / 1000) % 60
+                timerText.text = String.format("%02d:%02d:%02d", hours, mins, secs)
+            }
+            override fun onFinish() {
+                timerText.text = "00:00:00"
+            }
+        }.start()
+    }
+
+
+    fun updateTimer(hours: Int, minutes: Int, seconds: Int) {
+        timerText.text = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        countdownTimer?.cancel()
+        startNewTimer(hours, minutes, seconds)
     }
 
     private fun formatTime(seconds: Long): String {
@@ -100,4 +132,34 @@ class TimerFragment : Fragment() {
         val remainingSeconds = seconds % 60
         return String.format("%02d:%02d:%02d", hours, minutes, remainingSeconds)
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        val sharedPreferences = requireContext().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
+        val studyHours = sharedPreferences.getInt("studyHours", 0)
+        val studyMinutes = sharedPreferences.getInt("studyMinutes", 10)
+        val studySeconds = sharedPreferences.getInt("studySeconds", 0)
+
+        timeLeftInMillis = ((studyHours * 3600 + studyMinutes * 60 + studySeconds) * 1000).toLong()
+
+        Log.d("TIMER_FRAGMENT", "Updated study time on resume: ${formatTime(timeLeftInMillis / 1000)}")
+
+        timerText.text = formatTime(timeLeftInMillis / 1000)
+    }
+
+    fun updateTimerFromSettings() {
+        val sharedPreferences = requireContext().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
+        val studyHours = sharedPreferences.getInt("studyHours", 0)
+        val studyMinutes = sharedPreferences.getInt("studyMinutes", 10)
+        val studySeconds = sharedPreferences.getInt("studySeconds", 0)
+
+        timeLeftInMillis = ((studyHours * 3600 + studyMinutes * 60 + studySeconds) * 1000).toLong()
+
+        Log.d("TIMER_FRAGMENT", "Manually updated study time: ${formatTime(timeLeftInMillis / 1000)}")
+
+        timerText.text = formatTime(timeLeftInMillis / 1000)
+    }
+
+
 }

@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.zybooks.lockedin.R
+import com.zybooks.lockedin.service.TimerService
+import com.zybooks.lockedin.util.NotificationHelper
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,6 +16,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        if (intent.getBooleanExtra("from_settings", false)) {
+            val timerFragment = supportFragmentManager.findFragmentById(R.id.timerFragment) as? TimerFragment
+            timerFragment?.updateTimerFromSettings()
+        }
 
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 
@@ -53,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         if (::bottomNavigationView.isInitialized) {
             updateNavSelection()
         }
+        applySettings()
     }
 
     private fun updateNavSelection() {
@@ -63,4 +71,50 @@ class MainActivity : AppCompatActivity() {
             else -> R.id.nav_home
         }
     }
+
+    private fun applySettings() {
+        val preferences = getSharedPreferences("LockedInPrefs", MODE_PRIVATE)
+
+        val studyHours = preferences.getInt("studyHours", 0)
+        val studyMinutes = preferences.getInt("studyMinutes", 25)
+        val studySeconds = preferences.getInt("studySeconds", 0)
+
+        val breakHours = preferences.getInt("breakHours", 0)
+        val breakMinutes = preferences.getInt("breakMinutes", 5)
+        val breakSeconds = preferences.getInt("breakSeconds", 0)
+
+        val bannerNotification = preferences.getBoolean("bannerNotification", false)
+        val fullscreenNotification = preferences.getBoolean("fullscreenNotification", false)
+        val backgroundTimer = preferences.getBoolean("backgroundTimer", false)
+
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
+        if (currentFragment is TimerFragment) {
+            currentFragment.updateTimer(studyHours, studyMinutes, studySeconds)
+        }
+
+        if (backgroundTimer) {
+            startBackgroundTimerService()
+        } else {
+            stopBackgroundTimerService()
+        }
+
+        if (bannerNotification) {
+            NotificationHelper.sendNotification(this, "Banner Notification Enabled", "You'll receive alerts.")
+        }
+        if (fullscreenNotification) {
+            NotificationHelper.sendNotification(this, "Fullscreen Alerts Enabled", "You will get full-screen notifications.")
+        }
+    }
+
+    private fun startBackgroundTimerService() {
+        val intent = Intent(this, TimerService::class.java)
+        intent.putExtra("TIMER_DURATION", (25 * 60 * 1000).toLong())
+        startService(intent)
+    }
+
+    private fun stopBackgroundTimerService() {
+        val intent = Intent(this, TimerService::class.java)
+        stopService(intent)
+    }
+
 }

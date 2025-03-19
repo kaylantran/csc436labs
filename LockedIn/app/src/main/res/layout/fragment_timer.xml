@@ -24,10 +24,10 @@
             android:background="@drawable/timer_circle" />
 
         <TextView
-            android:id="@+id/timer_text"
+            android:id="@+id/timerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00:10:00"
+            android:text="00:25:00"
             android:textSize="50sp"
             android:textStyle="bold"
             android:textColor="@color/brown"
