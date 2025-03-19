@@ -8,155 +8,161 @@
     android:background="@color/gray"
     tools:context=".ui.SettingsActivity">
 
-    <TextView
-        android:id="@+id/study_interval_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Study Intervals:"
-        android:textSize="18sp"
-        android:textStyle="bold"
+    <ScrollView
+        android:id="@+id/settingsScrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="30dp"/>
-
-    <LinearLayout
-        android:id="@+id/study_intervals"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/study_interval_label"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <EditText
-            android:id="@+id/study_hours"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:inputType="number"
-            android:hint="00"/>
-
-        <TextView
-            android:text=":"
-            android:textSize="22sp"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:gravity="center_horizontal">
 
-        <EditText
-            android:id="@+id/study_minutes"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:inputType="number"
-            android:hint="00"/>
+            <TextView
+                android:id="@+id/study_interval_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Study Intervals:"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
 
-        <TextView
-            android:text=":"
-            android:textSize="22sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="16dp">
 
-        <EditText
-            android:id="@+id/study_seconds"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:inputType="number"
-            android:hint="00"/>
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/study_hours"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:hint="00"/>
 
-    <TextView
-        android:id="@+id/break_interval_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Break Periods:"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/study_intervals"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="20dp"/>
+                <TextView
+                    android:text=":"
+                    android:textSize="22sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"/>
 
-    <LinearLayout
-        android:id="@+id/break_intervals"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/break_interval_label"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+                <EditText
+                    android:id="@+id/study_minutes"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:hint="00"/>
 
-        <EditText
-            android:id="@+id/break_hours"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:inputType="number"
-            android:hint="00"/>
+                <TextView
+                    android:text=":"
+                    android:textSize="22sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"/>
 
-        <TextView
-            android:text=":"
-            android:textSize="22sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+                <EditText
+                    android:id="@+id/study_seconds"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:hint="00"/>
+            </LinearLayout>
 
-        <EditText
-            android:id="@+id/break_minutes"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:inputType="number"
-            android:hint="00"/>
+            <TextView
+                android:id="@+id/break_interval_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Break Periods:"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
 
-        <TextView
-            android:text=":"
-            android:textSize="22sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="16dp">
 
-        <EditText
-            android:id="@+id/break_seconds"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:inputType="number"
-            android:hint="00"/>
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/break_hours"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:hint="00"/>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/banner_notification"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Banner Notification"
-        app:layout_constraintTop_toBottomOf="@id/break_intervals"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="20dp"/>
+                <TextView
+                    android:text=":"
+                    android:textSize="22sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"/>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/fullscreen_notification"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Full Screen Notification"
-        app:layout_constraintTop_toBottomOf="@id/banner_notification"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="10dp"/>
+                <EditText
+                    android:id="@+id/break_minutes"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:hint="00"/>
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/background_timer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Background Timer"
-        app:layout_constraintTop_toBottomOf="@id/fullscreen_notification"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="10dp"/>
+                <TextView
+                    android:text=":"
+                    android:textSize="22sp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"/>
 
-    <Button
-        android:id="@+id/save_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save"
-        android:backgroundTint="@color/lightBlue"
-        app:layout_constraintTop_toBottomOf="@id/background_timer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="20dp"/>
+                <EditText
+                    android:id="@+id/break_seconds"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:hint="00"/>
+            </LinearLayout>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/banner_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Banner Notification"
+                android:layout_marginBottom="10dp"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/fullscreen_notification"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Full Screen Notification"
+                android:layout_marginBottom="10dp"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/background_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Background Timer"
+                android:layout_marginBottom="20dp"/>
+
+            <Button
+                android:id="@+id/save_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                android:backgroundTint="@color/lightBlue"
+                android:layout_gravity="center_horizontal"/>
+        </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

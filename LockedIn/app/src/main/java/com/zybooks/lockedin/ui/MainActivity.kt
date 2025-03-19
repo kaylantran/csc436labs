@@ -2,8 +2,6 @@ package com.zybooks.lockedin.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -24,7 +22,6 @@ class MainActivity : AppCompatActivity() {
             bottomNavigationView.selectedItemId = R.id.nav_home
         }
 
-
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
@@ -36,8 +33,9 @@ class MainActivity : AppCompatActivity() {
                     return@setOnItemSelectedListener true
                 }
                 R.id.nav_settings -> {
-                    loadFragment(SettingsFragment())
-                    return@setOnItemSelectedListener false
+                    val intent = Intent(this, SettingsActivity::class.java)
+                    startActivity(intent)
+                    return@setOnItemSelectedListener true
                 }
             }
             false
@@ -45,12 +43,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadFragment(fragment: Fragment) {
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
-        if (currentFragment?.javaClass != fragment.javaClass) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.nav_host_fragment, fragment)
-                .commit()
-        }
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.nav_host_fragment, fragment)
+            .commit()
     }
 
     override fun onResume() {
@@ -65,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         when (currentFragment) {
             is TimerFragment -> bottomNavigationView.selectedItemId = R.id.nav_home
             is HistoryFragment -> bottomNavigationView.selectedItemId = R.id.nav_history
-            is SettingsFragment -> bottomNavigationView.selectedItemId = R.id.nav_settings
+            else -> R.id.nav_home
         }
     }
 }

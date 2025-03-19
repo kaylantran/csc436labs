@@ -2,6 +2,7 @@ package com.zybooks.lockedin.ui
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +21,7 @@ class TimerFragment : Fragment() {
 
     private var countdownTimer: CountDownTimer? = null
     private var timerRunning = false
-    private var timeLeftInMillis: Long = 600000  // Default: 10 minutes
+    private var timeLeftInMillis: Long = (25*60000 )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -32,13 +33,16 @@ class TimerFragment : Fragment() {
         playButton = view.findViewById(R.id.play_button)
         resetButton = view.findViewById(R.id.reset_button)
 
-        // Observe timer updates from ViewModel
         viewModel.timerValue.observe(viewLifecycleOwner) { newTime ->
             timerText.text = formatTime(newTime)
         }
 
         playButton.setOnClickListener {
-            if (timerRunning) pauseTimer() else startTimer()
+            if (timerRunning) {
+                pauseTimer()
+            } else {
+                startTimer()
+            }
         }
 
         resetButton.setOnClickListener {
@@ -57,26 +61,37 @@ class TimerFragment : Fragment() {
 
             override fun onFinish() {
                 timerRunning = false
-                playButton.setImageResource(R.drawable.ic_play)
+                updatePlayButtonIcon(false)
             }
         }.start()
 
-        playButton.setImageResource(R.drawable.ic_pause)
         timerRunning = true
+        updatePlayButtonIcon(true)
     }
 
     private fun pauseTimer() {
         countdownTimer?.cancel()
-        playButton.setImageResource(R.drawable.ic_play)
         timerRunning = false
+        updatePlayButtonIcon(false)
     }
 
     private fun resetTimer() {
         countdownTimer?.cancel()
-        timeLeftInMillis = 600000  // Reset to 10 minutes
+        timeLeftInMillis = (25*60000)
         timerText.text = formatTime(timeLeftInMillis / 1000)
-        playButton.setImageResource(R.drawable.ic_play)
         timerRunning = false
+        updatePlayButtonIcon(false)
+    }
+
+    private fun updatePlayButtonIcon(isPlaying: Boolean) {
+        Log.d("TIMER_FRAGMENT", "Updating play button icon: $isPlaying")
+        requireActivity().runOnUiThread {
+            if (::playButton.isInitialized) {
+                playButton.setImageResource(if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play)
+            } else {
+                Log.e("TIMER_FRAGMENT", "playButton is not initialized!")
+            }
+        }
     }
 
     private fun formatTime(seconds: Long): String {
