@@ -39,7 +39,6 @@ class SettingsActivity : AppCompatActivity() {
         breakMinutes = findViewById(R.id.break_minutes)
         breakSeconds = findViewById(R.id.break_seconds)
         bannerNotification = findViewById(R.id.banner_notification)
-        fullscreenNotification = findViewById(R.id.fullscreen_notification)
         saveButton = findViewById(R.id.save_button)
 
         loadSettings()
@@ -60,7 +59,6 @@ class SettingsActivity : AppCompatActivity() {
         breakSeconds.setText(preferences.getInt("breakSeconds", 0).toString())
 
         bannerNotification.isChecked = preferences.getBoolean("bannerNotification", false)
-        fullscreenNotification.isChecked = preferences.getBoolean("fullscreenNotification", false)
     }
 
     private fun saveSettings() {
@@ -75,7 +73,6 @@ class SettingsActivity : AppCompatActivity() {
         editor.putInt("breakSeconds", breakSeconds.text.toString().toIntOrNull() ?: 0)
 
         editor.putBoolean("bannerNotification", bannerNotification.isChecked)
-        editor.putBoolean("fullscreenNotification", fullscreenNotification.isChecked)
         editor.apply()
     }
 

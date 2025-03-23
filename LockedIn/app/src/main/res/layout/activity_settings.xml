@@ -143,13 +143,6 @@
                 android:text="Banner Notification"
                 android:layout_marginBottom="10dp"/>
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/fullscreen_notification"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Full Screen Notification"
-                android:layout_marginBottom="10dp"/>
-
             <Button
                 android:id="@+id/save_button"
                 android:layout_width="wrap_content"
