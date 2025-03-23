@@ -57,16 +57,20 @@ class TimerService : Service() {
                     .remove("timerEndTime")
                     .remove("remainingTime")
                     .apply()
-                val message = if (currentSession == TimerSession.WORK) {
-                    "Work session complete! Time for a break."
-                } else {
-                    "Break is over. Time to get back to work!"
+                val showBannerNotification = prefs.getBoolean("bannerNotification", true)
+                if (showBannerNotification) {
+                    val message = if (currentSession == TimerSession.WORK) {
+                        "Work session complete! Time for a break."
+                    } else {
+                        "Break is over. Time to get back to work!"
+                    }
+
+                    NotificationHelper.sendNotification(
+                        this@TimerService,
+                        "Session complete",
+                        message
+                    )
                 }
-                NotificationHelper.sendNotification(
-                    this@TimerService,
-                    "Session complete",
-                    message
-                )
                 currentSession = getNextSession()
                 val nextDuration = getDurationForSession(currentSession)
                 startTimer(nextDuration)
