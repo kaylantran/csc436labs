@@ -41,7 +41,10 @@ class TimerService : Service() {
 
     private fun startTimer(durationMillis: Long) {
         val endTime = System.currentTimeMillis() + durationMillis
-        prefs.edit().putLong("timerEndTime", endTime).apply()
+        prefs.edit()
+            .putString("currentSessionType", currentSession.name)
+            .putLong("timerEndTime", endTime)
+            .apply()
         startForegroundWithNotification(currentSession)
         timer?.cancel()
         timer = object : CountDownTimer(durationMillis, 1000) {

@@ -21,6 +21,7 @@ class TimerFragment : Fragment() {
     private lateinit var timerText: TextView
     private lateinit var playButton: ImageButton
     private lateinit var resetButton: ImageButton
+    private lateinit var sessionTypeText: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -30,6 +31,7 @@ class TimerFragment : Fragment() {
         timerText = view.findViewById(R.id.timerTextView)
         playButton = view.findViewById(R.id.play_button)
         resetButton = view.findViewById(R.id.reset_button)
+        sessionTypeText = view.findViewById(R.id.sessionTypeTextView)
 
         viewModel = ViewModelProvider(
             this,
@@ -44,6 +46,10 @@ class TimerFragment : Fragment() {
 
         viewModel.isRunning.observe(viewLifecycleOwner) { running ->
             updatePlayButtonIcon(running)
+        }
+
+        viewModel.sessionLabel.observe(viewLifecycleOwner) { label ->
+            sessionTypeText.text = label
         }
 
         playButton.setOnClickListener {
@@ -65,7 +71,7 @@ class TimerFragment : Fragment() {
                     putExtra("SESSION_TYPE", "WORK")
                 }
                 ContextCompat.startForegroundService(requireContext(), intent)
-                viewModel.startTimer()
+                viewModel.startTimer("WORK")
             }
         }
 

@@ -15,6 +15,7 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
 
     val timerValue = MutableLiveData<Long>()
     val isRunning = MutableLiveData<Boolean>()
+    val sessionLabel = MutableLiveData<String>()
     private var countDownActive = false
 
     fun loadTimerState() {
@@ -30,7 +31,7 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun startTimer() {
+    fun startTimer(session: String = "WORK") {
         val prefs = getApplication<Application>().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
         val paused = prefs.getLong("pausedTime", -1L)
         val totalSeconds = if (paused > 0) {
@@ -52,11 +53,16 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
     private fun startCountdown() {
         countDownActive = true
         viewModelScope.launch {
-            while (true) {
+            while (countDownActive) {
                 val prefs = getApplication<Application>().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
                 val endTime = prefs.getLong("timerEndTime", -1)
                 val currentTime = System.currentTimeMillis()
                 val remaining = (endTime - currentTime) / 1000
+
+                val sessionType = prefs.getString("currentSessionType", "WORK")
+                sessionLabel.postValue(
+                    if (sessionType == "WORK") "Time remaining until next break:" else "Break ends in:"
+                )
 
                 if (endTime == -1L || remaining <= 0) {
                     if (isRunning.value == true) {

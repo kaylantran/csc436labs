@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.TimerFragment">
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/timer_container"
         android:layout_width="300dp"
         android:layout_height="300dp"
@@ -17,23 +17,44 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="80dp">
 
+
         <View
             android:id="@+id/timer_circle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/timer_circle" />
 
-        <TextView
-            android:id="@+id/timerTextView"
+        <LinearLayout
+            android:id="@+id/timerTextGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00:25:00"
-            android:textSize="50sp"
-            android:textStyle="bold"
-            android:textColor="@color/brown"
+            android:orientation="vertical"
             android:gravity="center"
-            android:layout_gravity="center"/>
-    </FrameLayout>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/sessionTypeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Locked In"
+                android:textSize="18sp"
+                android:textColor="@color/brown"
+                android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/timerTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:25:00"
+                android:textSize="50sp"
+                android:textStyle="bold"
+                android:textColor="@color/brown"
+                android:gravity="center"/>
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageButton
         android:id="@+id/play_button"
