@@ -66,7 +66,9 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
 
     fun resetTimer() {
         isRunning.value = false
-        val prefs = getApplication<Application>().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
+        val context = getApplication<Application>().applicationContext
+        context.stopService(Intent(context, TimerService::class.java))
+        val prefs = context.getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
         prefs.edit().remove("timerEndTime").apply()
         val hours = prefs.getInt("studyHours", 0)
         val minutes = prefs.getInt("studyMinutes", 25)
@@ -74,7 +76,6 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
         val defaultDuration = (hours * 3600 + minutes * 60 + seconds).toLong()
         timerValue.value = defaultDuration
     }
-
 
     fun pauseTimer() {
         isRunning.value = false
