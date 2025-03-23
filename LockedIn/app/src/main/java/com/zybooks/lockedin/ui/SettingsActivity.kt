@@ -40,7 +40,6 @@ class SettingsActivity : AppCompatActivity() {
         breakSeconds = findViewById(R.id.break_seconds)
         bannerNotification = findViewById(R.id.banner_notification)
         fullscreenNotification = findViewById(R.id.fullscreen_notification)
-        backgroundTimer = findViewById(R.id.background_timer)
         saveButton = findViewById(R.id.save_button)
 
         loadSettings()
@@ -62,7 +61,6 @@ class SettingsActivity : AppCompatActivity() {
 
         bannerNotification.isChecked = preferences.getBoolean("bannerNotification", false)
         fullscreenNotification.isChecked = preferences.getBoolean("fullscreenNotification", false)
-        backgroundTimer.isChecked = preferences.getBoolean("backgroundTimer", false)
     }
 
     private fun saveSettings() {
@@ -78,15 +76,7 @@ class SettingsActivity : AppCompatActivity() {
 
         editor.putBoolean("bannerNotification", bannerNotification.isChecked)
         editor.putBoolean("fullscreenNotification", fullscreenNotification.isChecked)
-        editor.putBoolean("backgroundTimer", backgroundTimer.isChecked)
-
         editor.apply()
-
-        if (backgroundTimer.isChecked) {
-            startBackgroundTimer()
-        } else {
-            stopBackgroundTimer()
-        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -100,16 +90,5 @@ class SettingsActivity : AppCompatActivity() {
         intent.putExtra("from_settings", true)
         startActivity(intent)
         finish()
-    }
-
-    private fun startBackgroundTimer() {
-        val intent = Intent(this, TimerService::class.java)
-        intent.putExtra("TIMER_DURATION", (25 * 60 * 1000).toLong())
-        startService(intent)
-    }
-
-    private fun stopBackgroundTimer() {
-        val intent = Intent(this, TimerService::class.java)
-        stopService(intent)
     }
 }
