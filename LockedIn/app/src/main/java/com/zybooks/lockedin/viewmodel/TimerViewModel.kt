@@ -14,33 +14,19 @@ import kotlinx.coroutines.launch
 class TimerViewModel(application: Application) : AndroidViewModel(application) {
 
     val timerValue = MutableLiveData<Long>()
-    val isRunning = MutableLiveData<Boolean>(false)
+    val isRunning = MutableLiveData<Boolean>()
 
     fun loadTimerState() {
         val prefs = getApplication<Application>().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
-        val endTime = prefs.getLong("timerEndTime", -1L)
+        val endTime = prefs.getLong("timerEndTime", -1)
         val currentTime = System.currentTimeMillis()
-
         if (endTime > currentTime) {
-            val remaining = (endTime - currentTime) / 1000
-            timerValue.value = remaining
             isRunning.value = true
-            viewModelScope.launch {
-                while (isRunning.value == true && (timerValue.value ?: 0L) > 0) {
-                    delay(1000)
-                    val current = timerValue.value ?: 0L
-                    timerValue.value = if (current > 1) current - 1 else 0L
-                }
-                isRunning.value = false
-            }
         } else {
-            val hours = prefs.getInt("studyHours", 0)
-            val minutes = prefs.getInt("studyMinutes", 25)
-            val seconds = prefs.getInt("studySeconds", 0)
-            val defaultSeconds = (hours * 3600 + minutes * 60 + seconds).toLong()
-            timerValue.value = defaultSeconds
+            resetToDefaultDuration()
             isRunning.value = false
         }
+        startCountdown()
     }
 
     fun startTimer() {
@@ -55,14 +41,39 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
         timerValue.value = totalSeconds
         isRunning.value = true
 
+        val intent = Intent(getApplication(), TimerService::class.java).apply {
+            putExtra("TIMER_DURATION", totalSeconds * 1000)
+            putExtra("SESSION_TYPE", "WORK")
+        }
+        ContextCompat.startForegroundService(getApplication(), intent)
+
+        startCountdown()
+    }
+
+    private fun startCountdown() {
         viewModelScope.launch {
-            while (isRunning.value == true && (timerValue.value ?: 0L) > 0) {
+            while (true) {
+                val prefs = getApplication<Application>().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
+                val endTime = prefs.getLong("timerEndTime", -1)
+                val currentTime = System.currentTimeMillis()
+                val remaining = (endTime - currentTime) / 1000
+
+                if (endTime == -1L || remaining <= 0) {
+                    if (isRunning.value == true) {
+                        timerValue.postValue(0L)
+                        isRunning.postValue(false)
+                    }
+                } else {
+                    timerValue.postValue(remaining)
+                    if (isRunning.value != true) {
+                        isRunning.postValue(true)
+                    }
+                }
                 delay(1000)
-                timerValue.value = timerValue.value?.minus(1)
             }
-            isRunning.value = false
         }
     }
+
 
     fun resetTimer() {
         isRunning.value = false
@@ -70,11 +81,18 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
         context.stopService(Intent(context, TimerService::class.java))
         val prefs = context.getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
         prefs.edit().remove("timerEndTime").apply()
+        resetToDefaultDuration()
+    }
+
+    private fun resetToDefaultDuration() {
+        val prefs = getApplication<Application>().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
         val hours = prefs.getInt("studyHours", 0)
         val minutes = prefs.getInt("studyMinutes", 25)
         val seconds = prefs.getInt("studySeconds", 0)
         val defaultDuration = (hours * 3600 + minutes * 60 + seconds).toLong()
+
         timerValue.value = defaultDuration
+        isRunning.value = false
     }
 
     fun pauseTimer() {

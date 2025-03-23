@@ -50,7 +50,18 @@ class TimerFragment : Fragment() {
             if (viewModel.isRunning.value == true) {
                 viewModel.pauseTimer()
             } else {
-                startTimerAndService()
+                val prefs = requireContext().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
+                val hours = prefs.getInt("studyHours", 0)
+                val minutes = prefs.getInt("studyMinutes", 25)
+                val seconds = prefs.getInt("studySeconds", 0)
+                val duration = (hours * 3600 + minutes * 60 + seconds) * 1000L
+
+                val intent = Intent(requireContext(), TimerService::class.java).apply {
+                    putExtra("TIMER_DURATION", duration)
+                    putExtra("SESSION_TYPE", "WORK")
+                }
+                ContextCompat.startForegroundService(requireContext(), intent)
+                viewModel.startTimer()
             }
         }
 
@@ -77,17 +88,4 @@ class TimerFragment : Fragment() {
         super.onResume()
         viewModel.loadTimerState()
     }
-
-    private fun startTimerAndService() {
-        val prefs = requireContext().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
-        val hours = prefs.getInt("studyHours", 0)
-        val minutes = prefs.getInt("studyMinutes", 25)
-        val seconds = prefs.getInt("studySeconds", 0)
-        val totalMillis = ((hours * 3600 + minutes * 60 + seconds) * 1000).toLong()
-        val intent = Intent(requireContext(), TimerService::class.java)
-        intent.putExtra("TIMER_DURATION", totalMillis)
-        ContextCompat.startForegroundService(requireContext(), intent)
-        viewModel.startTimer()
-    }
-
 }
