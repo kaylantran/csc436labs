@@ -18,8 +18,6 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var breakMinutes: EditText
     private lateinit var breakSeconds: EditText
     private lateinit var bannerNotification: SwitchMaterial
-    private lateinit var fullscreenNotification: SwitchMaterial
-    private lateinit var backgroundTimer: SwitchMaterial
     private lateinit var saveButton: Button
     private lateinit var preferences: SharedPreferences
 

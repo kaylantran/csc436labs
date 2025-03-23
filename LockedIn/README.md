@@ -14,5 +14,12 @@ allow post notifications.
 
 *While the project was meant to utilize Jetpack Compose, due to time constraints
 and existing View-based implementation, I decided to focus on delivering 
-a functional and stable app. I understand how Compose would be applied
-using @Composable functions, State, LaunchedEffect, and Scaffold. 
+a functional and stable app. 
+
+I understand that state in Compose should be managed using remember, mutableStateOf,
+and ViewModel state hoisting. My existing ViewModel uses LiveData for timer values,
+which would be replaced by mutableStateOf in Compose. Navigation between screens would
+be handled using NavHost() and NavController instead of FragmentContainerView, and
+I would use composables like Scaffold, Bottom Navigation, and IconButton for UI 
+structure. Finally, I used SharedPreferences for persistence, but modern Compose-based
+apps use Jetpack DataStore. 
