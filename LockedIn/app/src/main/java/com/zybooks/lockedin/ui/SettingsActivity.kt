@@ -8,7 +8,6 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.zybooks.lockedin.R
-import com.zybooks.lockedin.service.TimerService
 
 class SettingsActivity : AppCompatActivity() {
 
