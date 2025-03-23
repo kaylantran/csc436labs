@@ -51,11 +51,15 @@ class TimerFragment : Fragment() {
                 viewModel.pauseTimer()
             } else {
                 val prefs = requireContext().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
-                val hours = prefs.getInt("studyHours", 0)
-                val minutes = prefs.getInt("studyMinutes", 25)
-                val seconds = prefs.getInt("studySeconds", 0)
-                val duration = (hours * 3600 + minutes * 60 + seconds) * 1000L
-
+                val pausedTime = prefs.getLong("pausedTime", -1L)
+                val duration = if (pausedTime > 0) {
+                    pausedTime * 1000
+                } else {
+                    val hours = prefs.getInt("studyHours", 0)
+                    val minutes = prefs.getInt("studyMinutes", 25)
+                    val seconds = prefs.getInt("studySeconds", 0)
+                    (hours * 3600 + minutes * 60 + seconds) * 1000L
+                }
                 val intent = Intent(requireContext(), TimerService::class.java).apply {
                     putExtra("TIMER_DURATION", duration)
                     putExtra("SESSION_TYPE", "WORK")
@@ -87,5 +91,9 @@ class TimerFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.loadTimerState()
+
+        viewModel.isRunning.value?.let {
+            updatePlayButtonIcon(it)
+        }
     }
 }

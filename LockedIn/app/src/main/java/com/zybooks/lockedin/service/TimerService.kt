@@ -42,18 +42,18 @@ class TimerService : Service() {
     private fun startTimer(durationMillis: Long) {
         val endTime = System.currentTimeMillis() + durationMillis
         prefs.edit().putLong("timerEndTime", endTime).apply()
-
         startForegroundWithNotification(currentSession)
-
         timer?.cancel()
         timer = object : CountDownTimer(durationMillis, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsLeft = millisUntilFinished / 1000
+                prefs.edit().putLong("remainingTime", secondsLeft).apply()
             }
-
             override fun onFinish() {
-                prefs.edit().remove("timerEndTime").apply()
-
+                prefs.edit()
+                    .remove("timerEndTime")
+                    .remove("remainingTime")
+                    .apply()
                 val message = if (currentSession == TimerSession.WORK) {
                     "Work session complete! Time for a break."
                 } else {

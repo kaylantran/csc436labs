@@ -15,6 +15,7 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
 
     val timerValue = MutableLiveData<Long>()
     val isRunning = MutableLiveData<Boolean>()
+    private var countDownActive = false
 
     fun loadTimerState() {
         val prefs = getApplication<Application>().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
@@ -22,35 +23,34 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
         val currentTime = System.currentTimeMillis()
         if (endTime > currentTime) {
             isRunning.value = true
+            startCountdown()
         } else {
             resetToDefaultDuration()
             isRunning.value = false
         }
-        startCountdown()
     }
 
     fun startTimer() {
         val prefs = getApplication<Application>().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
-        val hours = prefs.getInt("studyHours", 0)
-        val minutes = prefs.getInt("studyMinutes", 25)
-        val seconds = prefs.getInt("studySeconds", 0)
-        val totalSeconds = (hours * 3600 + minutes * 60 + seconds).toLong()
+        val paused = prefs.getLong("pausedTime", -1L)
+        val totalSeconds = if (paused > 0) {
+            prefs.edit().remove("pausedTime").apply()
+            paused
+        } else {
+            val hours = prefs.getInt("studyHours", 0)
+            val minutes = prefs.getInt("studyMinutes", 25)
+            val seconds = prefs.getInt("studySeconds", 0)
+            (hours * 3600 + minutes * 60 + seconds).toLong()
+        }
         val endTime = System.currentTimeMillis() + totalSeconds * 1000
         prefs.edit().putLong("timerEndTime", endTime).apply()
-
         timerValue.value = totalSeconds
         isRunning.value = true
-
-        val intent = Intent(getApplication(), TimerService::class.java).apply {
-            putExtra("TIMER_DURATION", totalSeconds * 1000)
-            putExtra("SESSION_TYPE", "WORK")
-        }
-        ContextCompat.startForegroundService(getApplication(), intent)
-
         startCountdown()
     }
 
     private fun startCountdown() {
+        countDownActive = true
         viewModelScope.launch {
             while (true) {
                 val prefs = getApplication<Application>().getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
@@ -96,6 +96,16 @@ class TimerViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun pauseTimer() {
+        val remaining = timerValue.value ?: 0L
+        countDownActive = false
         isRunning.value = false
+        val context = getApplication<Application>().applicationContext
+        context.stopService(Intent(context, TimerService::class.java))
+        val prefs = context.getSharedPreferences("LockedInPrefs", Context.MODE_PRIVATE)
+        prefs.edit()
+            .putLong("pausedTime", remaining)
+            .remove("timerEndTime")
+            .apply()
     }
+
 }
